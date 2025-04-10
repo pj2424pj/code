@@ -1,7 +1,6 @@
 import React from 'react'
 
-function ShareSnippetDialog( { onClose}: { onClose: () => void }) {
-
+function ShareSnippetDialog({onClose}: {onClose: () => void}) {
   return (
     <div>ShareSnippetDialog</div>
   )
