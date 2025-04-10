@@ -6,25 +6,27 @@ import React from 'react'
 import { api } from '../../../../convex/_generated/api';
 import { motion } from "framer-motion";
 import { Loader2, Play } from "lucide-react";
-import { saveExecution } from '../../../../convex/codeExecutions';
+ 
 
  
 
 function RunButton() {
 
   const { user } = useUser();
-  const { runCode, language, isRunning, executionResult}=useCodeEditorStore();
+  const { runCode, language, isRunning }=useCodeEditorStore();
   const saveExecution = useMutation(api.codeExecutions.saveExecution);
  
 
 const handleRun = async () => {
   await runCode();
-  if(user && executionResult){
+  const result = getExecutionResult();
+
+  if(user && result){
     await saveExecution({
       language,
-      code: executionResult.code,
-      output: executionResult.output || undefined,
-      error: executionResult.error || undefined,
+      code: result.code,
+      output: result.output || undefined,
+      error: result.error || undefined,
     })
   }
 };
