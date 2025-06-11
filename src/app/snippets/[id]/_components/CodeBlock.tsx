@@ -1,6 +1,7 @@
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import CopyButton from "./CopyButton";
 import { atomOneDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import Image from "next/image";
 
 const CodeBlock = ({ language, code }: { language: string; code: string }) => {
   const trimmedCode = code
@@ -12,7 +13,16 @@ const CodeBlock = ({ language, code }: { language: string; code: string }) => {
     <div className="my-4 bg-[#0a0a0f] rounded-lg overflow-hidden border border-[#ffffff0a]">
       <div className="flex items-center justify-between px-4 py-2 bg-[#ffffff08]">
         <div className="flex items-center gap-2">
-          <img src={`/${language}.png`} alt={language} className="size-4 object-contain" />
+      
+
+<Image
+  src={`/${language}.png`}
+  alt={language}
+  width={16}    
+  height={16}
+  className="object-contain"
+/>
+
           <span className="text-sm text-gray-400">{language || "plaintext"}</span>
         </div>
         <CopyButton code={trimmedCode} />

@@ -11,6 +11,7 @@ import CopyButton from './_components/CopyButton';
 import { Editor } from '@monaco-editor/react';
 import { Clock, Code, MessageSquare, User } from 'lucide-react';
 import Comments from './_components/Comments';
+import Image from 'next/image';
 
 function SnippetDetailPage() {
     const snippetId=useParams().id;
@@ -28,11 +29,16 @@ function SnippetDetailPage() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
               <div className="flex items-center gap-4">
                 <div className="flex items-center justify-center size-12 rounded-xl bg-[#ffffff08] p-2.5">
-                  <img
-                    src={`/${snippet.language}.png`}
-                    alt={`${snippet.language} logo`}
-                    className="w-full h-full object-contain"
-                  />
+                  
+ <div className="relative w-full h-full">
+  <Image
+    src={`/${snippet.language}.png`}
+    alt={`${snippet.language} logo`}
+    fill
+    className="object-contain"
+  />
+</div>
+
                 </div>
                 <div>
                   <h1 className="text-xl sm:text-2xl font-semibold text-white mb-2">
