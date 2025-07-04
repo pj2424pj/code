@@ -16,6 +16,7 @@ interface Phase {
 export default function SplashScreen({ onComplete }: SplashScreenProps) {
   const [progress, setProgress] = useState(0);
   const [currentPhase, setCurrentPhase] = useState(0);
+  const [mounted, setMounted] = useState(false);
 
   const phases: Phase[] = [
     { text: "Initializing Quantum Processors...", icon: Zap },
@@ -24,6 +25,51 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     { text: "Activating Quantum Core...", icon: Atom },
     { text: "Launching SyntaxForge...", icon: Rocket },
   ];
+
+  // Generate static positions for stars to avoid hydration mismatch
+  const [starPositions] = useState(() => {
+    return Array.from({ length: 150 }, (_, i) => ({
+      id: `star-${i}`,
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      width: Math.random() * 3 + 1,
+      height: Math.random() * 3 + 1,
+      delay: Math.random() * 3,
+      color: i % 3 === 0 ? '#00d4ff' : i % 3 === 1 ? '#ff006e' : '#8338ec',
+    }));
+  });
+
+  const [particlePositions] = useState(() => {
+    return Array.from({ length: 25 }, (_, i) => ({
+      id: `particle-${i}`,
+      left: Math.random() * 100,
+      delay: Math.random() * 20,
+      duration: 15 + Math.random() * 10,
+      color: i % 4 === 0 ? '#00d4ff' : i % 4 === 1 ? '#ff006e' : i % 4 === 2 ? '#8338ec' : '#39ff14',
+    }));
+  });
+
+  const [logoParticles] = useState(() => {
+    return Array.from({ length: 8 }, (_, i) => ({
+      id: `logo-particle-${i}`,
+      top: 20 + Math.sin(i * 45 * Math.PI / 180) * 30,
+      left: 20 + Math.cos(i * 45 * Math.PI / 180) * 30,
+      delay: i * 0.2,
+    }));
+  });
+
+  const [spinnerParticles] = useState(() => {
+    return Array.from({ length: 4 }, (_, i) => ({
+      id: `spinner-particle-${i}`,
+      top: 18 + Math.sin(i * 90 * Math.PI / 180) * 15,
+      left: 18 + Math.cos(i * 90 * Math.PI / 180) * 15,
+      duration: 2 + i * 0.5,
+    }));
+  });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -54,21 +100,25 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
 
   const currentPhaseData = getCurrentPhase();
 
+  if (!mounted) {
+    return null; // Prevent hydration mismatch
+  }
+
   return (
     <div className="splash-screen">
       {/* Enhanced starfield background */}
       <div className="starfield">
-        {[...Array(150)].map((_, i) => (
+        {starPositions.map((star) => (
           <div
-            key={i}
+            key={star.id}
             className="star"
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              width: `${Math.random() * 3 + 1}px`,
-              height: `${Math.random() * 3 + 1}px`,
-              animationDelay: `${Math.random() * 3}s`,
-              background: i % 3 === 0 ? '#00d4ff' : i % 3 === 1 ? '#ff006e' : '#8338ec',
+              left: `${star.left}%`,
+              top: `${star.top}%`,
+              width: `${star.width}px`,
+              height: `${star.height}px`,
+              animationDelay: `${star.delay}s`,
+              background: star.color,
             }}
           />
         ))}
@@ -79,15 +129,15 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
 
       {/* Floating cosmic particles */}
       <div className="particles">
-        {[...Array(25)].map((_, i) => (
+        {particlePositions.map((particle) => (
           <div
-            key={i}
+            key={particle.id}
             className="particle"
             style={{
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 20}s`,
-              animationDuration: `${15 + Math.random() * 10}s`,
-              background: i % 4 === 0 ? '#00d4ff' : i % 4 === 1 ? '#ff006e' : i % 4 === 2 ? '#8338ec' : '#39ff14',
+              left: `${particle.left}%`,
+              animationDelay: `${particle.delay}s`,
+              animationDuration: `${particle.duration}s`,
+              background: particle.color,
             }}
           />
         ))}
@@ -123,14 +173,14 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
               <Rocket className="w-16 h-16 text-cyan-400 relative z-10" />
               
               {/* Floating particles around logo */}
-              {[...Array(8)].map((_, i) => (
+              {logoParticles.map((particle) => (
                 <div
-                  key={i}
+                  key={particle.id}
                   className="absolute w-2 h-2 bg-cyan-400 rounded-full animate-ping"
                   style={{
-                    top: `${20 + Math.sin(i * 45 * Math.PI / 180) * 30}px`,
-                    left: `${20 + Math.cos(i * 45 * Math.PI / 180) * 30}px`,
-                    animationDelay: `${i * 0.2}s`,
+                    top: `${particle.top}px`,
+                    left: `${particle.left}px`,
+                    animationDelay: `${particle.delay}s`,
                   }}
                 />
               ))}
@@ -246,14 +296,14 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-cyan-400 rounded-full animate-pulse" />
               
               {/* Orbital particles */}
-              {[...Array(4)].map((_, i) => (
+              {spinnerParticles.map((particle) => (
                 <div
-                  key={i}
+                  key={particle.id}
                   className="absolute w-2 h-2 bg-pink-400 rounded-full"
                   style={{
-                    top: `${18 + Math.sin(i * 90 * Math.PI / 180) * 15}px`,
-                    left: `${18 + Math.cos(i * 90 * Math.PI / 180) * 15}px`,
-                    animation: `spin ${2 + i * 0.5}s linear infinite`,
+                    top: `${particle.top}px`,
+                    left: `${particle.left}px`,
+                    animation: `spin ${particle.duration}s linear infinite`,
                   }}
                 />
               ))}

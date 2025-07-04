@@ -27,8 +27,33 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const [showSplash, setShowSplash] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  // Generate static positions to avoid hydration mismatch
+  const [starPositions] = useState(() => {
+    if (typeof window === 'undefined') return [];
+    return Array.from({ length: 200 }, (_, i) => ({
+      id: `bg-star-${i}`,
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      width: Math.random() * 2 + 1,
+      height: Math.random() * 2 + 1,
+      delay: Math.random() * 3,
+    }));
+  });
+
+  const [particlePositions] = useState(() => {
+    if (typeof window === 'undefined') return [];
+    return Array.from({ length: 30 }, (_, i) => ({
+      id: `bg-particle-${i}`,
+      left: Math.random() * 100,
+      delay: Math.random() * 20,
+      duration: 15 + Math.random() * 10,
+    }));
+  });
 
   useEffect(() => {
+    setMounted(true);
     // Check if splash has been shown in this session
     const splashShown = sessionStorage.getItem('splashShown');
     if (splashShown) {
@@ -47,42 +72,47 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col relative`}
         >
-          {/* Starfield background */}
-          <div className="starfield">
-            {[...Array(200)].map((_, i) => (
-              <div
-                key={i}
-                className="star"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  width: `${Math.random() * 2 + 1}px`,
-                  height: `${Math.random() * 2 + 1}px`,
-                  animationDelay: `${Math.random() * 3}s`,
-                }}
-              />
-            ))}
-          </div>
+          {/* Only render background effects after mounting to prevent hydration mismatch */}
+          {mounted && (
+            <>
+              {/* Starfield background */}
+              <div className="starfield">
+                {starPositions.map((star) => (
+                  <div
+                    key={star.id}
+                    className="star"
+                    style={{
+                      left: `${star.left}%`,
+                      top: `${star.top}%`,
+                      width: `${star.width}px`,
+                      height: `${star.height}px`,
+                      animationDelay: `${star.delay}s`,
+                    }}
+                  />
+                ))}
+              </div>
 
-          {/* Nebula effect */}
-          <div className="nebula" />
+              {/* Nebula effect */}
+              <div className="nebula" />
 
-          {/* Floating particles */}
-          <div className="particles">
-            {[...Array(30)].map((_, i) => (
-              <div
-                key={i}
-                className="particle"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  animationDelay: `${Math.random() * 20}s`,
-                  animationDuration: `${15 + Math.random() * 10}s`,
-                }}
-              />
-            ))}
-          </div>
+              {/* Floating particles */}
+              <div className="particles">
+                {particlePositions.map((particle) => (
+                  <div
+                    key={particle.id}
+                    className="particle"
+                    style={{
+                      left: `${particle.left}%`,
+                      animationDelay: `${particle.delay}s`,
+                      animationDuration: `${particle.duration}s`,
+                    }}
+                  />
+                ))}
+              </div>
+            </>
+          )}
 
-          {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
+          {showSplash && mounted && <SplashScreen onComplete={handleSplashComplete} />}
 
           <div className="relative z-10">
             <ConvexClientProvider>
