@@ -29,7 +29,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
   // Generate static positions for stars to avoid hydration mismatch
   const [starPositions] = useState(() => {
     return Array.from({ length: 150 }, (_, i) => ({
-      id: `star-${i}`,
+      id: `splash-star-${i}`,
       left: Math.random() * 100,
       top: Math.random() * 100,
       width: Math.random() * 3 + 1,
@@ -41,7 +41,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
 
   const [particlePositions] = useState(() => {
     return Array.from({ length: 25 }, (_, i) => ({
-      id: `particle-${i}`,
+      id: `splash-particle-${i}`,
       left: Math.random() * 100,
       delay: Math.random() * 20,
       duration: 15 + Math.random() * 10,
@@ -51,7 +51,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
 
   const [logoParticles] = useState(() => {
     return Array.from({ length: 8 }, (_, i) => ({
-      id: `logo-particle-${i}`,
+      id: `splash-logo-particle-${i}`,
       top: 20 + Math.sin(i * 45 * Math.PI / 180) * 30,
       left: 20 + Math.cos(i * 45 * Math.PI / 180) * 30,
       delay: i * 0.2,
@@ -60,11 +60,19 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
 
   const [spinnerParticles] = useState(() => {
     return Array.from({ length: 4 }, (_, i) => ({
-      id: `spinner-particle-${i}`,
+      id: `splash-spinner-particle-${i}`,
       top: 18 + Math.sin(i * 90 * Math.PI / 180) * 15,
       left: 18 + Math.cos(i * 90 * Math.PI / 180) * 15,
       duration: 2 + i * 0.5,
     }));
+  });
+
+  const [orbitalRings] = useState(() => {
+    return [
+      { id: 'orbital-ring-1', size: 32, duration: 8, direction: 'normal', opacity: 0.3, color: 'cyan-500' },
+      { id: 'orbital-ring-2', size: 40, duration: 12, direction: 'reverse', opacity: 0.2, color: 'purple-500' },
+      { id: 'orbital-ring-3', size: 48, duration: 16, direction: 'normal', opacity: 0.1, color: 'pink-500' },
+    ];
   });
 
   useEffect(() => {
@@ -158,9 +166,16 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
         >
           {/* Orbital rings */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-32 h-32 border border-cyan-500/30 rounded-full animate-spin" style={{ animationDuration: '8s' }} />
-            <div className="absolute w-40 h-40 border border-purple-500/20 rounded-full animate-spin" style={{ animationDuration: '12s', animationDirection: 'reverse' }} />
-            <div className="absolute w-48 h-48 border border-pink-500/10 rounded-full animate-spin" style={{ animationDuration: '16s' }} />
+            {orbitalRings.map((ring) => (
+              <div
+                key={ring.id}
+                className={`absolute w-${ring.size} h-${ring.size} border border-${ring.color}/${ring.opacity * 100} rounded-full animate-spin`}
+                style={{ 
+                  animationDuration: `${ring.duration}s`,
+                  animationDirection: ring.direction as any
+                }}
+              />
+            ))}
           </div>
 
           <div className="relative inline-block">
@@ -226,7 +241,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
           {/* Current phase with enhanced styling */}
           <div className="flex items-center justify-center gap-4 text-cyan-300 bg-black/30 backdrop-blur-sm rounded-2xl px-6 py-4 border border-cyan-500/30 max-w-md mx-auto">
             <motion.div
-              key={currentPhase}
+              key={`phase-icon-${currentPhase}`}
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ duration: 0.4 }}
@@ -236,7 +251,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
               <div className="absolute inset-0 bg-cyan-400/20 rounded-full blur animate-pulse" />
             </motion.div>
             <motion.span
-              key={currentPhase}
+              key={`phase-text-${currentPhase}`}
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4 }}
